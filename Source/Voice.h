@@ -34,13 +34,14 @@ private:
     void setFrequency(int midiNote);
     void setFrequency(float freq);
     void setGain(float gain);
-    juce::dsp::ProcessorChain<juce::dsp::Gain<float>, juce::dsp::Oscillator<float>> processorChain;
+    juce::dsp::ProcessorChain<juce::dsp::Gain<float>, juce::dsp::Oscillator<float>/*,juce::dsp::Oscillator<float>*/> processorChain;
     juce::ADSR adsr;
     double sampleRate = 44100.0;
     juce::AudioBuffer<float> tempBuffer;
     enum {
         GainIndex,
-        OscIndex
+        OscIndex,
+        Osc2Index,
     };
 
 };

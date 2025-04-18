@@ -16,20 +16,30 @@ Voice::Voice()
 
 void Voice::prepare(const juce::dsp::ProcessSpec& spec)
 {
+    sampleRate = spec.sampleRate;
     processorChain.prepare(spec);
     auto& osc = processorChain.get<OscIndex>();
     auto& gain = processorChain.get<GainIndex>();
     osc.initialise([](float x) {return x < 0.0 ? -1.0 : 1.0; });
     osc.prepare(spec);
     gain.prepare(spec);
-    gain.setGainDecibels(1.0);
+    gain.setGainLinear(1.0);
+    //auto& osc2 = processorChain.get<Osc2Index>();
+    //osc2.initialise([](float x) {
+    //return juce::jmap(x
+    //, -juce::MathConstants<float>::pi
+    //, juce::MathConstants<float>::pi
+    //, -1.0f, 1.0f);
+    //},2);
+    //osc2.prepare(spec);
     juce::ADSR::Parameters par;
-    par.attack = 0.1;
-    par.decay = 0.2;
-    par.sustain = 1.0;
-    par.decay = 0.3;
-    adsr.setParameters(par);
+    
+    par.attack = 0.1f;
+    par.decay = 1.0f;
+    par.sustain = 1.0f;
+    par.release = 0.1f;
     adsr.setSampleRate(spec.sampleRate);
+    adsr.setParameters(par);
     tempBuffer.setSize(spec.numChannels, spec.maximumBlockSize);
 }
 
@@ -43,15 +53,14 @@ bool Voice::canPlaySound(juce::SynthesiserSound* sound)
 
 void Voice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound*, int)
 {
-    adsr.noteOn();
     setFrequency(midiNoteNumber);
+    adsr.noteOn();
 
 }
 
 void Voice::stopNote(float, bool allowTailOff)
 {
     adsr.noteOff();
-    clearCurrentNote();
 }
 
 void Voice::pitchWheelMoved(int)
@@ -66,18 +75,19 @@ void Voice::controllerMoved(int, int)
 void Voice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
 
-    if (!isVoiceActive()) {
+    if (!isVoiceActive() && !adsr.isActive()) {
         return;
     }
+    
 
     juce::Random rng;
         float* channel = outputBuffer.getWritePointer(0);
         auto tempBlock = juce::dsp::AudioBlock<float>(tempBuffer).getSubBlock(0, (size_t)numSamples);
         tempBuffer.clear();
-    juce::dsp::AudioBlock<float> audioBlock(outputBuffer);
     juce::dsp::ProcessContextReplacing context(tempBlock);
     processorChain.process(context);
-    //adsr.applyEnvelopeToBuffer(tempBuffer,0,numSamples);
+    adsr.applyEnvelopeToBuffer(tempBuffer,0,numSamples);
+
     for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
     {
         // Check if the source buffer (tempBuffer) has this channel
@@ -91,6 +101,7 @@ void Voice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSam
                 numSamples         // Number of samples to add
             );
         }
+
         // Optional: Handle cases where output has more channels than tempBuffer (e.g., copy mono to stereo)
         // else if (channel > 0 && tempBuffer.getNumChannels() == 1) {
         //    outputBuffer.addFrom(channel, startSample, tempBuffer, 0, 0, numSamples); // Copy mono channel 0 to other output channels
@@ -103,6 +114,8 @@ void Voice::setFrequency(int midiNote)
 {
     auto& osc = processorChain.get<OscIndex>();
     osc.setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNote));
+    //auto& osc2 = processorChain.get<Osc2Index>();
+    //osc2.setFrequency(osc.getFrequency());
 
 }
 

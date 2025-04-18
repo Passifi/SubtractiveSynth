@@ -20,7 +20,7 @@ SoundMangerAudioProcessor::SoundMangerAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ), parameters(*this, nullptr, juce::Identifier("ToneManger"),
-                           createParameters()), synthAudio(keyState)
+                           createParameters())
 #endif
 {
 
@@ -164,11 +164,7 @@ void SoundMangerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    juce::Random rng;
-    auto& gain = processorChain.get<gainIndex>();
-    gain.setGainDecibels(*cutoff*10.0f);
-    auto& freq = processorChain.get<oscIndex>();
-    freq.setFrequency(*cutoff * 440.0f);
+
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -186,13 +182,6 @@ void SoundMangerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     // interleaved by keeping the same state.
     
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-        }
-        // ..do something to the data...
-    }
     synthAudio.getNextAudioBlock(buffer,midiMessages);
     //synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
     //juce::dsp::AudioBlock<float> block(buffer);

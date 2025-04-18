@@ -60,7 +60,6 @@ private:
     std::atomic<float>* cutoff = nullptr;
     juce::Synthesiser synth;
     SynthAudioSource synthAudio;
-    juce::MidiKeyboardState keyState;
 
     enum {
         oscIndex,
