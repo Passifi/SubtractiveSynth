@@ -143,8 +143,11 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\GlobalConstantsAndMacros.cpp"/>
+    <ClCompile Include="..\..\Source\CustomOscilattor.cpp"/>
     <ClCompile Include="..\..\Source\MangerSynth.cpp"/>
     <ClCompile Include="..\..\Source\SynthAudioSource.cpp"/>
+    <ClCompile Include="..\..\Source\TreeStateSliderComponent.cpp"/>
     <ClCompile Include="..\..\Source\Voice.cpp"/>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp"/>
     <ClCompile Include="..\..\Source\PluginEditor.cpp"/>
@@ -2934,8 +2937,11 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\GlobalConstantsAndMacros.h"/>
+    <ClInclude Include="..\..\Source\CustomOscilattor.h"/>
     <ClInclude Include="..\..\Source\MangerSynth.h"/>
     <ClInclude Include="..\..\Source\SynthAudioSource.h"/>
+    <ClInclude Include="..\..\Source\TreeStateSliderComponent.h"/>
     <ClInclude Include="..\..\Source\Voice.h"/>
     <ClInclude Include="..\..\Source\PluginProcessor.h"/>
     <ClInclude Include="..\..\Source\PluginEditor.h"/>

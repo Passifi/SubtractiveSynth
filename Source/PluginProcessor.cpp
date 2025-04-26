@@ -25,11 +25,25 @@ SoundMangerAudioProcessor::SoundMangerAudioProcessor()
 {
 
     cutoff = parameters.getRawParameterValue("cutoff");
+    voiceParameters.filterCutoff = 2000.0f;
+    voiceParameters.filterResonance = 0.3;
+    voiceParameters.osc1Tuning = 1.0;
+    voiceParameters.osc2Tuning = 1.01;
     auto& osc = processorChain.get<oscIndex>();
     osc.initialise([](float x) {return x < 0.0 ? -1.0 : 1.0; });
     osc.setFrequency(440.0);
     auto& gain = processorChain.get<gainIndex>();
     gain.setGainDecibels(10.0);
+
+    parameters.addParameterListener("cutoff", this);
+    parameters.addParameterListener("resonance", this);
+    parameters.addParameterListener("osc1Tuner", this);
+    parameters.addParameterListener("osc2Tuner", this);
+    parameters.addParameterListener("attack", this);
+    parameters.addParameterListener("decay", this);
+    parameters.addParameterListener("sustain", this);
+    parameters.addParameterListener("release", this);
+
 
 }
 
@@ -124,6 +138,7 @@ void SoundMangerAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
         synth.addSound(new SineWaveSound());
     }
     synthAudio.prepareToPlay(spec);
+    synthAudio.setVoiceParameters(voiceParameters);
 }
 
 void SoundMangerAudioProcessor::releaseResources()
@@ -164,27 +179,9 @@ void SoundMangerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    juce::Random rng;
-    auto& gain = processorChain.get<gainIndex>();
-    gain.setGainDecibels(*cutoff*10.0f);
-    auto& freq = processorChain.get<oscIndex>();
-    freq.setFrequency(*cutoff * 440.0f);
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
+
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -194,10 +191,6 @@ void SoundMangerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         // ..do something to the data...
     }
     synthAudio.getNextAudioBlock(buffer,midiMessages);
-    //synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-    //juce::dsp::AudioBlock<float> block(buffer);
-    //juce::dsp::ProcessContextReplacing context(block);
-    //processorChain.process(context);
     
 }
 
@@ -230,10 +223,54 @@ juce::AudioProcessorValueTreeState::ParameterLayout SoundMangerAudioProcessor::c
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     
-    auto cutoffParam = std::make_unique<juce::AudioParameterFloat>("cutoff", "Cutoff", 0.0f, 1.0, 0.9);
-    layout.add(std::move(cutoffParam));
+    //auto cutoffParam = std::make_unique<juce::AudioParameterFloat>("cutoff", "Cutoff", 0.0f, 20000.0, 3000.9);
+    //layout.add(std::move(cutoffParam));
+    //auto par1 = std::make_unique<juce::AudioParameterFloat>("resonance", "Resonance", 0.0f, 1.0, 0.1);
+    //layout.add(std::move(par1));
+    //auto par2 = std::make_unique<juce::AudioParameterFloat>("osc1Tuner", "Osc1Tuner", 0.0f, 1.0f, 0.5);
+    //layout.add(std::move(par2));
+    //auto par3 = std::make_unique<juce::AudioParameterFloat>("osc2Tuner", "Osc2Tuner", 0.0f, 1.0f, 0.5);
+    //layout.add(std::move(par3));
 
+    for (auto& el : stateMap) {
+        auto param = std::make_unique<juce::AudioParameterFloat>(el.first, el.second.name, el.second.range, el.second.startingValue);
+        layout.add(std::move(param));
+    }
     return layout;
+}
+
+void SoundMangerAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+{
+    if (parameterID == "cutoff")
+    {
+        voiceParameters.filterCutoff = newValue;
+        synthAudio.setVoiceParameters(voiceParameters);
+    }
+    else if (parameterID == "resonance") {
+        voiceParameters.filterResonance = newValue;
+        synthAudio.setVoiceParameters(voiceParameters);
+    }
+    else if (parameterID == "osc1Tuner") {
+        
+        voiceParameters.osc1Tuning = std::pow(2.0, newValue/24.0f);
+        synthAudio.setVoiceParameters(voiceParameters);
+    }
+    else if (parameterID == "osc2Tuner") {
+        voiceParameters.osc2Tuning = std::pow(2.0, newValue/24.0f);
+        synthAudio.setVoiceParameters(voiceParameters);
+    }
+    else if (parameterID == "attack") { 
+        synthAudio.setVoiceAttack(newValue);
+    }
+    else if (parameterID == "decay") { 
+        synthAudio.setVoiceDecay(newValue);
+    }
+    else if (parameterID == "sustain") { 
+        synthAudio.setVoiceSustain(newValue);
+    }
+    else if (parameterID == "release") { 
+        synthAudio.setVoiceRelease(newValue);
+    }
 }
 
 //==============================================================================

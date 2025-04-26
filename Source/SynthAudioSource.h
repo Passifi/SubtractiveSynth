@@ -10,7 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-
+#include "Voice.h"
 #include <vector>
 
 class SynthAudioSource : public juce::AudioSource {
@@ -22,7 +22,11 @@ public:
     void releaseResources() override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void getNextAudioBlock(juce::AudioBuffer<float>& buffer,juce::MidiBuffer midi);
-
+    void setVoiceParameters(VoiceParameters param);
+    void setVoiceAttack(float newValue);
+    void setVoiceDecay(float newValue);
+    void setVoiceSustain(float newValue);
+    void setVoiceRelease(float newValue);
 
 private:
     const int MAX_VOICES = 32;

@@ -10,18 +10,18 @@
 
 #pragma once
 #include <JuceHeader.h>
-using juce::Slider, std::unique_ptr, std::make_unique;
+using juce::Slider, std::unique_ptr, std::make_unique, juce::Label;
 typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
-class TreeStateSlider {
+class TreeStateSlider : public juce::Component {
 
 public:
     TreeStateSlider(std::string name, juce::AudioProcessorValueTreeState& vts,Slider::SliderStyle style);
     Slider slider; 
+    Label label;
     unique_ptr<SliderAttachment> sliderAttachment;
     std::string name; 
-
-    void setName(std::string newName);
-
+    void paint(juce::Graphics& g) override;
+    void resized() override;
 
 
 };

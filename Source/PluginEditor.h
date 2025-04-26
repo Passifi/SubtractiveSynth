@@ -31,6 +31,10 @@ private:
     // access the processor object that created it.
     SoundMangerAudioProcessor& audioProcessor;
     TreeStateSlider cutOff;
+    TreeStateSlider resonance;
+    TreeStateSlider osc1Tuner;
+    TreeStateSlider osc2Tuner;
+    std::vector<std::unique_ptr<TreeStateSlider>> adsrSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SoundMangerAudioProcessorEditor)
 };

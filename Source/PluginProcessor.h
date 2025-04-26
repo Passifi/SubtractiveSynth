@@ -11,11 +11,11 @@
 #include <JuceHeader.h>
 #include "MangerSynth.h"
 #include "SynthAudioSource.h"
-
+#include "GlobalConstantsAndMacros.h"
 //==============================================================================
 /**
 */
-class SoundMangerAudioProcessor : public juce::AudioProcessor
+class SoundMangerAudioProcessor : public juce::AudioProcessor, juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
@@ -55,8 +55,11 @@ public:
     void getStateInformation(juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 private:
+
     juce::AudioProcessorValueTreeState parameters;
+    VoiceParameters voiceParameters;
     std::atomic<float>* cutoff = nullptr;
     juce::Synthesiser synth;
     SynthAudioSource synthAudio;

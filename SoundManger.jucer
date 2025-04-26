@@ -4,13 +4,25 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="OnSIt2" name="SoundManger">
     <GROUP id="{55720DEB-80B0-904E-98A7-3E350BB78AF9}" name="Source">
+      <FILE id="kRQBVs" name="GlobalConstantsAndMacros.cpp" compile="1" resource="0"
+            file="Source/GlobalConstantsAndMacros.cpp"/>
+      <FILE id="ef2vVS" name="GlobalConstantsAndMacros.h" compile="0" resource="0"
+            file="Source/GlobalConstantsAndMacros.h"/>
       <GROUP id="{E9DF5239-8DE1-3DC3-AE90-C92304BDE888}" name="Synth">
+        <FILE id="Gpbr6f" name="CustomOscilattor.cpp" compile="1" resource="0"
+              file="Source/CustomOscilattor.cpp"/>
+        <FILE id="FNLuVb" name="CustomOscilattor.h" compile="0" resource="0"
+              file="Source/CustomOscilattor.h"/>
         <FILE id="S4Wanu" name="MangerSynth.cpp" compile="1" resource="0" file="Source/MangerSynth.cpp"/>
         <FILE id="fugtPF" name="MangerSynth.h" compile="0" resource="0" file="Source/MangerSynth.h"/>
         <FILE id="UODHax" name="SynthAudioSource.cpp" compile="1" resource="0"
               file="Source/SynthAudioSource.cpp"/>
         <FILE id="WfRvDL" name="SynthAudioSource.h" compile="0" resource="0"
               file="Source/SynthAudioSource.h"/>
+        <FILE id="Wy0rH8" name="TreeStateSliderComponent.cpp" compile="1" resource="0"
+              file="Source/TreeStateSliderComponent.cpp"/>
+        <FILE id="yntaXu" name="TreeStateSliderComponent.h" compile="0" resource="0"
+              file="Source/TreeStateSliderComponent.h"/>
         <FILE id="S3WP8z" name="Voice.cpp" compile="1" resource="0" file="Source/Voice.cpp"/>
         <FILE id="QSXxFz" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
       </GROUP>

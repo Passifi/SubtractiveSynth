@@ -9,7 +9,6 @@
 */
 
 #include "SynthAudioSource.h"
-#include "Voice.h"
 
 SynthAudioSource::SynthAudioSource(juce::MidiKeyboardState& keyState) : keyboardState(keyState)
 {
@@ -44,9 +43,60 @@ void SynthAudioSource::getNextAudioBlock(const juce::AudioSourceChannelInfo& buf
 
 void SynthAudioSource::getNextAudioBlock(juce::AudioBuffer<float>& buffer,juce::MidiBuffer midi)
 {
-    //juce::MidiBuffer incomingMidi;
-    //keyboardState.processNextMidiBuffer(incomingMidi, 0, buffer.getNumSamples(), true);
-
     synth.renderNextBlock(buffer, midi, 0, buffer.getNumSamples());
+}
 
+void SynthAudioSource::setVoiceParameters(VoiceParameters param)
+{
+    for (int i = 0; i < synth.getNumVoices(); i++)
+    {
+        if (auto v = dynamic_cast<Voice*>(synth.getVoice(i))) {
+            v->setParameters(param);
+        }
+    }
+}
+
+void SynthAudioSource::setVoiceAttack(float newValue)
+{
+    for (size_t i = 0; i < synth.getNumVoices(); i++)
+    {
+        if (auto v = dynamic_cast<Voice*>(synth.getVoice(i)))
+        {
+            v->setAttack(newValue);
+        }
+    }
+}
+
+void SynthAudioSource::setVoiceDecay(float newValue)
+{
+    for (size_t i = 0; i < synth.getNumVoices(); i++)
+    {
+        if (auto v = dynamic_cast<Voice*>(synth.getVoice(i)))
+        {
+            v->setDecay(newValue);
+        }
+    }
+}
+
+void SynthAudioSource::setVoiceSustain(float newValue)
+{
+    for (size_t i = 0; i < synth.getNumVoices(); i++)
+    {
+        if (auto v = dynamic_cast<Voice*>(synth.getVoice(i)))
+        {
+            v->setSustain(newValue);
+        }
+
+    }
+}
+
+void SynthAudioSource::setVoiceRelease(float newValue)
+{
+    for (size_t i = 0; i < synth.getNumVoices(); i++)
+    {
+        if (auto v = dynamic_cast<Voice*>(synth.getVoice(i)))
+        {
+            v->setRelease(newValue);
+        }
+    }
 }

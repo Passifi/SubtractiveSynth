@@ -697,10 +697,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\GlobalConstantsAndMacros.cpp">
+      <Filter>SoundManger\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CustomOscilattor.cpp">
+      <Filter>SoundManger\Source\Synth</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\MangerSynth.cpp">
       <Filter>SoundManger\Source\Synth</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\SynthAudioSource.cpp">
+      <Filter>SoundManger\Source\Synth</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TreeStateSliderComponent.cpp">
       <Filter>SoundManger\Source\Synth</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Voice.cpp">
@@ -3675,10 +3684,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\GlobalConstantsAndMacros.h">
+      <Filter>SoundManger\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CustomOscilattor.h">
+      <Filter>SoundManger\Source\Synth</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\MangerSynth.h">
       <Filter>SoundManger\Source\Synth</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\SynthAudioSource.h">
+      <Filter>SoundManger\Source\Synth</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TreeStateSliderComponent.h">
       <Filter>SoundManger\Source\Synth</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Voice.h">
