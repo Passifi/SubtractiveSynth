@@ -12,33 +12,29 @@
 
 Voice::Voice()
 {
+
+    lfo.initialise([](float x) {return std::sin(x); }, 128);
+    lfo.setFrequency(1.0f);
 }
 
 void Voice::prepare(const juce::dsp::ProcessSpec& spec)
 {
-    // refactor as initilize ProccesorChain
-    // Put Processorchain in a dedicated class to completly abstract away the process? 
-    // Overhead?
+    lfo.prepare({ spec.sampleRate / lfoUpdateRate,spec.maximumBlockSize,spec.numChannels });
     processorChain.prepare(spec);
     auto& osc = processorChain.get<OscIndex>();
     auto& osc2 = processorChain.get<Osc2Index>();
     auto& gain = processorChain.get<GainIndex>();
-    //osc.setOscillatorForm(Square);
-    //osc.setGain(0.8);
     osc.prepare(spec);
     osc.initialise([](float x) {return x < 0.0f ? -1.0 : 1.0; }, 128);
-    //osc2.setOscillatorForm(Saw);
-    
     osc2.initialise([](float x) {return x < 0.0f ? -1.0 : 1.0; }, 128);
     osc2.prepare(spec);
-    //osc2.setGain(0.0);
     gain.prepare(spec);
-    gain.setGainLinear(0.3);
+    gain.setGainLinear(1.0);
     auto& filter = processorChain.get<FilterIndex>();
     filter.prepare(spec);
     filter.setCutoffFrequencyHz(parameters.filterCutoff);
     filter.setResonance(parameters.filterResonance);
-
+    filter.setDrive(2.0);
     juce::ADSR::Parameters par;
     par.attack = 0.1;
     par.decay = 0.1;
@@ -59,8 +55,8 @@ bool Voice::canPlaySound(juce::SynthesiserSound* sound)
 
 void Voice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound*, int)
 {
-    adsr.noteOn();
     setFrequency(midiNoteNumber);
+    adsr.noteOn();
 
 }
 
@@ -81,11 +77,11 @@ void Voice::controllerMoved(int, int)
 void Voice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples)
 {
 
-    if (!isVoiceActive()) {
+    if (!isVoiceActive() && !adsr.isActive()) {
         return;
     }
-
     juce::Random rng;
+    processorChain.get<FilterIndex>().setCutoffFrequencyHz(rng.nextFloat() * 5000.0f);
     tempBuffer.clear();
         auto tempBlock = juce::dsp::AudioBlock<float>(tempBuffer).getSubBlock(0, (size_t)numSamples);
         auto outBlock = juce::dsp::AudioBlock<float>(outputBuffer).getSubBlock(startSample,numSamples);

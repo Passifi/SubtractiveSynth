@@ -20,7 +20,7 @@ SoundMangerAudioProcessor::SoundMangerAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ), parameters(*this, nullptr, juce::Identifier("ToneManger"),
-                           createParameters()), synthAudio(keyState)
+                           createParameters())
 #endif
 {
 
@@ -29,6 +29,7 @@ SoundMangerAudioProcessor::SoundMangerAudioProcessor()
     voiceParameters.filterResonance = 0.3;
     voiceParameters.osc1Tuning = 1.0;
     voiceParameters.osc2Tuning = 1.01;
+    
     auto& osc = processorChain.get<oscIndex>();
     osc.initialise([](float x) {return x < 0.0 ? -1.0 : 1.0; });
     osc.setFrequency(440.0);
@@ -139,6 +140,10 @@ void SoundMangerAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     }
     synthAudio.prepareToPlay(spec);
     synthAudio.setVoiceParameters(voiceParameters);
+    synthAudio.setVoiceAttack(*parameters.getRawParameterValue("attack"));
+    synthAudio.setVoiceDecay(*parameters.getRawParameterValue("decay"));
+    synthAudio.setVoiceSustain(*parameters.getRawParameterValue("sustain"));
+    synthAudio.setVoiceRelease(*parameters.getRawParameterValue("release"));
 }
 
 void SoundMangerAudioProcessor::releaseResources()
@@ -211,12 +216,21 @@ void SoundMangerAudioProcessor::getStateInformation (juce::MemoryBlock& destData
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    // check whether VTS Parameters are setup
+    // save those ... is there a convenient function for this? 
+    auto state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void SoundMangerAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+    if (xmlState.get() != nullptr) {
+        if (xmlState->hasTagName(parameters.state.getType())) {
+            parameters.replaceState(juce::ValueTree::fromXml(*xmlState));
+        }
+    }
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout SoundMangerAudioProcessor::createParameters()

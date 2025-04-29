@@ -16,7 +16,7 @@
 class SynthAudioSource : public juce::AudioSource {
 
 public:
-    SynthAudioSource(juce::MidiKeyboardState& keyState);
+    SynthAudioSource();
     void prepareToPlay(int, double sampleRate) override;
     void prepareToPlay(juce::dsp::ProcessSpec spec);
     void releaseResources() override;
@@ -31,6 +31,5 @@ public:
 private:
     const int MAX_VOICES = 32;
     juce::Synthesiser synth; 
-    juce::MidiKeyboardState& keyboardState;
     juce::ADSR adsr;
 };

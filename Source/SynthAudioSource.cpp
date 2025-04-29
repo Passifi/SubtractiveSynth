@@ -10,7 +10,7 @@
 
 #include "SynthAudioSource.h"
 
-SynthAudioSource::SynthAudioSource(juce::MidiKeyboardState& keyState) : keyboardState(keyState)
+SynthAudioSource::SynthAudioSource() 
 {
 
 }

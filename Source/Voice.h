@@ -53,6 +53,8 @@ public:
     void setSustain(float newValue);
     void setRelease(float newValue);
 private:
+    static constexpr size_t lfoUpdateRate = 100;
+    size_t lfoUpdateCounter = lfoUpdateRate;
     float tailOff;
     VoiceParameters parameters{ 1.0,1.02,2000.0f,0.2,Moog };
     void setFrequency(int midiNote);
@@ -60,16 +62,18 @@ private:
     void setGain(float gain);
     void setFilter();
     void updateFrequencies();
-    juce::dsp::ProcessorChain<juce::dsp::Gain<float>,juce::dsp::Oscillator<float>,juce::dsp::Oscillator<float>,juce::dsp::LadderFilter<float>> processorChain;
+    juce::dsp::ProcessorChain<juce::dsp::Oscillator<float>,juce::dsp::Oscillator<float>,juce::dsp::LadderFilter<float>,juce::dsp::Gain<float>> processorChain;
     juce::ADSR adsr;
+    juce::dsp::Oscillator<float> lfo;
     double sampleRate = 44100.0;
     float baseFrequency = 440.0f;
     juce::AudioBuffer<float> tempBuffer;
     enum {
-        GainIndex,
+        
         OscIndex,
         Osc2Index,
-        FilterIndex
+        FilterIndex,
+        GainIndex
     };
 
 };
